@@ -1,7 +1,8 @@
-import React,{ useState } from "react";
+import { stringify } from "query-string";
+import React,{ useState , useEffect } from "react";
 
 //include images into your bundle
-import rigoImage from "../../img/rigo-baby.jpg";
+
 
 
 
@@ -9,7 +10,10 @@ import rigoImage from "../../img/rigo-baby.jpg";
 const Home = () => {
 	const [newTask,setNewTask]= useState("")
 	const [tasks,setTasks] = useState([])
-	// console.log(tasks);
+	
+
+
+
 	function addTask(e) {
 		if (e.key === "Enter") {
 			setTasks(tasks.concat(newTask));
@@ -30,6 +34,39 @@ const Home = () => {
 	if (number >= 2) {
 		txt = "tasks"
 	}
+
+	function createUser() {
+		fetch ('https://playground.4geeks.com/apis/fake/todos/user/DavidPadilla', {
+			method: "POST",
+			body: JSON.stringify(['']),
+			headers: {
+				"content-type": "application/json"
+			}
+		}
+		.then((response)=>{
+			response.json()})
+		.then((data)=>{
+			console.log(data)})
+		.catch((error)=>{
+			console.log(error)}
+		)
+	)};
+
+	function getToDoList() {
+		fetch ('https://playground.4geeks.com/apis/fake/todos/user/DavidPadilla', {
+			method: "GET",
+			headers: {
+				"content-type": "application/json"
+			}
+		}
+		.then((response)=>{
+			response.json()})
+		.then((data)=>{
+			console.log(data)})
+		.catch((error)=>{
+			console.log(error)}
+		)
+	)};
 
 	return (
 	<>
