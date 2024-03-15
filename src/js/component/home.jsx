@@ -11,12 +11,11 @@ const Home = () => {
 	const [newTask,setNewTask]= useState("")
 	const [tasks,setTasks] = useState([])
 	
-
-
+// crear funcion actualizar tarea cuando agregue tarea o elimine tarea
 
 	function addTask(e) {
 		if (e.key === "Enter") {
-			setTasks(tasks.concat(newTask));
+			setTasks(tasks.concat({"label": newTask , "done": "false"}));
 			setNewTask("");
 		}
 	}
@@ -26,7 +25,7 @@ const Home = () => {
 		setTasks(filteredTasks);
 	}
 
-	const arrTasks = tasks.map((task)=> <li className="justify-content-left">{task}<span className="text-danger fw-bold" onClick={()=>deleteTask(task)}> X</span></li>)
+	const arrTasks = tasks.map((task)=> <li className="justify-content-left">{task.label}<span className="text-danger fw-bold" onClick={()=>deleteTask(task)}> X</span></li>)
 
 	let number = tasks.length
 
@@ -38,11 +37,11 @@ const Home = () => {
 	function createUser() {
 		fetch ('https://playground.4geeks.com/apis/fake/todos/user/DavidPadilla', {
 			method: "POST",
-			body: JSON.stringify(['']),
+			body: JSON.stringify([]),
 			headers: {
 				"content-type": "application/json"
 			}
-		}
+		})
 		.then((response)=>{
 			response.json()})
 		.then((data)=>{
@@ -50,23 +49,29 @@ const Home = () => {
 		.catch((error)=>{
 			console.log(error)}
 		)
-	)};
+	};
 
 	function getToDoList() {
 		fetch ('https://playground.4geeks.com/apis/fake/todos/user/DavidPadilla', {
 			method: "GET",
-			headers: {
-				"content-type": "application/json"
+		})
+		.then((response)=> {
+			console.log(response); 
+			if (response.status === 404) {
+				createUser()
 			}
-		}
-		.then((response)=>{
-			response.json()})
+			return response.json()
+		})
 		.then((data)=>{
-			console.log(data)})
+			setTasks(data)})
 		.catch((error)=>{
 			console.log(error)}
 		)
-	)};
+	};
+
+	useEffect(()=>{
+		getToDoList()
+	},[])
 
 	return (
 	<>
