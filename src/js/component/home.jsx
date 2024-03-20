@@ -9,23 +9,30 @@ import React,{ useState , useEffect } from "react";
 //create your first component
 const Home = () => {
 	const [newTask,setNewTask]= useState("")
-	const [tasks,setTasks] = useState([])
+	const [tasks,setTasks] = useState([""])
 	
-// crear funcion actualizar tarea cuando agregue tarea o elimine tarea
+
 
 	function addTask(e) {
 		if (e.key === "Enter") {
-			setTasks(tasks.concat({"label": newTask , "done": "false"}));
+			const newList = (tasks.concat({"label": newTask , "done": false}));
 			setNewTask("");
+			reloadTasks(newList);
 		}
 	}
 
 	function deleteTask(index){
 		const filteredTasks = tasks.filter((i) => i !== index);
-		setTasks(filteredTasks);
+
+		if (filteredTasks.length === 0){
+			deleteUser();
+		}else{
+			reloadTasks(filteredTasks)
+		}
 	}
 
-	const arrTasks = tasks.map((task)=> <li className="justify-content-left">{task.label}<span className="text-danger fw-bold" onClick={()=>deleteTask(task)}> X</span></li>)
+
+	const arrTasks = tasks.map((task,index)=> <li key={index} className="justify-content-left">{task.label}<span className="text-danger fw-bold" onClick={()=>deleteTask(task)}> X</span></li>)
 
 	let number = tasks.length
 
@@ -43,9 +50,10 @@ const Home = () => {
 			}
 		})
 		.then((response)=>{
+
 			response.json()})
 		.then((data)=>{
-			console.log(data)})
+			getToDoList()})
 		.catch((error)=>{
 			console.log(error)}
 		)
@@ -56,7 +64,7 @@ const Home = () => {
 			method: "GET",
 		})
 		.then((response)=> {
-			console.log(response); 
+
 			if (response.status === 404) {
 				createUser()
 			}
@@ -67,6 +75,41 @@ const Home = () => {
 		.catch((error)=>{
 			console.log(error)}
 		)
+	};
+
+	function reloadTasks(newList) {
+
+		fetch ('https://playground.4geeks.com/apis/fake/todos/user/DavidPadilla', {
+			method: "PUT",
+			body: JSON.stringify(newList),
+			headers: {
+				"content-type": "application/json"
+			}
+		})
+		.then((response)=>{
+			response.json()})
+		.then((data)=>{
+			getToDoList()})
+		.catch((error)=>{
+			console.log(error)}
+		)
+	};
+
+	function deleteUser() {
+		fetch ('https://playground.4geeks.com/apis/fake/todos/user/DavidPadilla', {
+			method: "DELETE",
+			headers: {
+				"content-type": "application/json"
+			}
+		})
+		.then((response)=>{
+			response.json();})
+		.then((data)=>{
+			createUser()})
+		.catch((error)=>{
+			console.log(error)}
+		)
+
 	};
 
 	useEffect(()=>{
